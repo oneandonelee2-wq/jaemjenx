@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter JaemJen</title>
+    <!-- Memanggil React & Tailwind -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- DATA DUMMY ---
+        const initialPosts = [
+            { id: 1, author: { name: "Jaemin", handle: "@jaemin_na", avatar: "🐰" }, content: "Hari ini cerah banget, tapi tetep aja ada yang lebih cerah kalau lagi senyum. ☀️🐶", stats: { likes: 1240, replies: 45, reposts: 210 }, timestamp: "10m ago", isLiked: false, replies: [] },
+            { id: 2, author: { name: "Jeno", handle: "@leejeno_23", avatar: "🐶" }, content: "Mabar sampai jam 3 pagi, sekarang ngantuk berat pas kelas. Jangan ditiru ya ges.", stats: { likes: 890, replies: 120, reposts: 50 }, timestamp: "1h ago", isLiked: false, replies: [] }
+        ];
+
+        const trendingTopics = [
+            { id: 1, category: "Trending in Indonesia", topic: "#JaemJen", tweets: "125K Tweets" },
+            { id: 2, category: "Gaming", topic: "Valorant", tweets: "85K Tweets" }
+        ];
+
+        // --- KOMPONEN ---
+        const Notification = ({ message }) => (
+            <div className="bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg text-sm font-medium animate-bounce">{message}</div>
+        );
+
+        const App = () => {
+            const [posts, setPosts] = useState(initialPosts);
+            const [notifications, setNotifications] = useState([]);
+            const [newPostContent, setNewPostContent] = useState('');
+            const currentUser = { name: "Jeno", handle: "@leejeno_23", avatar: "🐶" };
+
+            const showNotification = (message) => {
+                const id = Date.now();
+                setNotifications(prev => [...prev, { id, message }]);
+                setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 3000);
+            };
+
+            const handleLike = (postId) => {
+                setPosts(posts.map(post => {
+                    if (post.id === postId) {
+                        return { ...post, isLiked: !post.isLiked, stats: { ...post.stats, likes: post.isLiked ? post.stats.likes - 1 : post.stats.likes + 1 } };
+                    }
+                    return post;
+                }));
+            };
+
+            const handleAddPost = (e) => {
+                e.preventDefault();
+                if (!newPostContent.trim()) return;
+
+                const newPost = { id: Date.now(), author: currentUser, content: newPostContent, stats: { likes: 0, replies: 0, reposts: 0 }, timestamp: "Just now", isLiked: false, replies: [] };
+                setPosts([newPost, ...posts]);
+                setNewPostContent('');
+
+                const keywords = ["jaemin", "nana", "na", "kelinci"];
+                if (keywords.some(keyword => newPost.content.toLowerCase().includes(keyword))) {
+                    setTimeout(() => {
+                        showNotification("Jaemin liked your post! ❤️");
+                        setTimeout(() => {
+                            setPosts(currentPosts => currentPosts.map(post => {
+                                if (post.id === newPost.id) {
+                                    return { ...post, stats: { ...post.stats, replies: post.stats.replies + 1, likes: post.stats.likes + 1 }, replies: [...post.replies, { id: Date.now(), author: { name: "Jaemin", handle: "@jaemin_na", avatar: "🐰" }, content: "Ciee kangen ya? Bentar lagi aku ke sana
